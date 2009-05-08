@@ -47,4 +47,11 @@ class TestApacheLookup < Test::Unit::TestCase
     
     assert_equal 'resolved.com', actual
   end
+  
+  def test_updates_created_at_if_expired
+    @al.resolv_ip '1.1.1.2'
+    actual = @al.cache['1.1.1.2']['created_at']
+
+    assert_equal Time.now.to_s, actual
+  end
 end
