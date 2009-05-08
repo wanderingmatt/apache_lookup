@@ -1,40 +1,44 @@
 require 'test/unit'
 require 'apache_lookup'
+require 'rubygems'
+require 'mocha'
 
 class TestApacheLookup < Test::Unit::TestCase
   def setup
-    CACHE = YAML.load_file("cache.yml")
+    cache = YAML.load_file('test/test_cache.yml')
+    
+    @al = ApacheLookup.new cache    
   end
   
   def test_reads_from_cache_if_cached_and_not_expired
-    actual = ApacheLookup.resolv_ip "1.1.1.1"
+    actual = @al.resolv_ip "1.1.1.1"
     
-    assert_equal "http://1111.com", actual
+    assert_equal "cached.com", actual
   end
   
   def test_resolves_ip_if_not_cached
-    actual = ApacheLookup.resolv_ip "1.1.1.0"
+    actual = @al.resolv_ip "1.1.1.0"
     
-    assert_equal "http://1110.com", actual
+    assert_equal "1110.com", actual
   end
   
   def test_resolves_ip_if_expired
-    actual = ApacheLookup.resolv_ip "1.1.1.2"
+    actual = @al.resolv_ip "1.1.1.2"
     
-    assert_equal "http://1112.com", actual
+    assert_equal "resolved.com", actual
   end
   
   def test_writes_to_cache_if_not_cached
-    actual = ApacheLookup.resolv_ip "1.1.1.0"
-    expected = CACHE['1.1.1.0']['URL']
+    actual = @al.resolv_ip "1.1.1.0"
+    expected = @cache['1.1.1.0']['url']
     
-    assert_equal "http://1110.com", actual
+    assert_equal "1110.com", actual
   end
   
   def test_writes_to_cache_if_expired
-    actual = ApacheLookup.resolv_ip "1.1.1.2"
-    expected = CACHE['1.1.1.2']['URL']
+    actual = @al.resolv_ip "1.1.1.2"
+    expected = @cache['1.1.1.2']['url']
     
-    assert_equal "http://1112.com", actual
+    assert_equal "resolved.com", actual
   end
 end
