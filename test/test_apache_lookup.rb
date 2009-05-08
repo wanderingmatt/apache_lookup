@@ -12,9 +12,20 @@ end
 class TestApacheLookup < Test::Unit::TestCase
   def setup
     test_cache = YAML.load_file('test/test_cache.yml')
+    @test_log = File.new('test/test_log.log')
     @test_line = '208.77.188.166 - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342'
     
     @al = ApacheLookup.new test_cache
+  end
+  
+  def test_stores_lines_from_log
+    expected = [
+      '208.77.188.166 - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342',
+      '75.146.57.34 - - [29/Apr/2009:16:08:38 -0700] "GET / HTTP/1.1" 304 -'
+      ]
+    actual = @al.store_lines @test_log
+    
+    assert_equal expected, actual
   end
   
   def test_parses_line_and_replaces_ip
