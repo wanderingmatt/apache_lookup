@@ -11,9 +11,17 @@ end
 
 class TestApacheLookup < Test::Unit::TestCase
   def setup
-    cache = YAML.load_file('test/test_cache.yml')
+    test_cache = YAML.load_file('test/test_cache.yml')
+    @test_line = '208.77.188.166 - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342'
     
-    @al = ApacheLookup.new cache
+    @al = ApacheLookup.new test_cache
+  end
+  
+  def test_parses_line_and_replaces_ip
+    expected = 'resolved.com - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342'
+    actual = @al.parse_line @test_line
+    
+    assert_equal expected, actual
   end
   
   def test_reads_from_cache_if_cached_and_not_expired
