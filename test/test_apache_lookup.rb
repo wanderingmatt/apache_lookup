@@ -7,6 +7,10 @@ class Resolv
   end
 end
 
+class ApacheLookup
+  attr_accessor :cache, :lines
+end
+
 class TestApacheLookup < Test::Unit::TestCase
   def setup
     test_cache_path = 'test/test_cache.yml'

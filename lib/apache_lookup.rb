@@ -7,15 +7,12 @@ class ApacheLookup
   VERSION = '0.0.1'
   
   IP_REGEX = /^((\d{1,3}\.){3}\d{1,3})\s/
-  EXPIRATION = 2419200 # 30 days
   CACHE_PATH = '../cache/cache.yml'
-  
-  attr_accessor :cache, :lines
-  
+  EXPIRATION = 2419200 # 30 days
+    
   def initialize cache_path
     load_cache cache_path
     @queue = Queue.new
-    @thread_pool = []
     @lines = []
   end
   
@@ -34,35 +31,27 @@ class ApacheLookup
   end
   
   def process_lines
+    thread_pool = []
+    
     @lines.each do |line|
       @queue << line
     end
     
-    100.times do
-      @thread_pool << Thread.new do
+    5.times do
+      thread_pool << Thread.new do
         until @queue.empty?
           parse_line @queue.pop
         end
       end
     end
     
-    @thread_pool.each { |t| t.join }
-    
-    # threads = (0..20).map { 
-    #   Thread.new do 
-    #     @lines.each do |line|
-    #       parse_line line
-    #     end
-    #   end 
-    # } 
-    # puts "hello!!!" 
-    # threads.each { |thread| thread.join }
-    
+    thread_pool.each { |t| t.join }    
   end
   
   def parse_line line
     line =~ IP_REGEX
     line.gsub!($1, resolv_ip($1))
+    return line
   end
   
   def resolv_ip ip    
