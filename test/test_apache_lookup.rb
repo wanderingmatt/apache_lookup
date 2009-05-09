@@ -14,10 +14,11 @@ end
 class TestApacheLookup < Test::Unit::TestCase
   def setup
     test_cache_path = 'test/test_cache.yml'
-    @test_log = File.new('test/test_log.log')
+    test_log_path = 'test/test_log.log'
+    @test_log = File.new(test_log_path)
     @test_line = '208.77.188.166 - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342'
     
-    @al = ApacheLookup.new test_cache_path
+    @al = ApacheLookup.new test_cache_path, test_log_path
   end
   
   def test_cache_is_empty_on_first_run
