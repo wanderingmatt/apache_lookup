@@ -1,7 +1,5 @@
 require 'test/unit'
 require 'apache_lookup'
-require 'rubygems'
-require 'mocha'
 
 class Resolv
   def getname ip
