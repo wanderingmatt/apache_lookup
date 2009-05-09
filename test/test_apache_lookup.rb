@@ -9,11 +9,17 @@ end
 
 class TestApacheLookup < Test::Unit::TestCase
   def setup
-    test_cache = YAML.load_file('test/test_cache.yml')
+    test_cache_path = 'test/test_cache.yml'
     @test_log = File.new('test/test_log.log')
     @test_line = '208.77.188.166 - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342'
     
-    @al = ApacheLookup.new test_cache
+    @al = ApacheLookup.new test_cache_path
+  end
+  
+  def test_cache_is_empty_on_first_run
+    @al.load_cache '../flunk/cache.yml'
+    
+    assert @al.cache.empty?
   end
   
   def test_stores_lines_from_log
