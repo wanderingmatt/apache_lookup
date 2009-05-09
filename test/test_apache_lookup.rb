@@ -19,13 +19,25 @@ class TestApacheLookup < Test::Unit::TestCase
   end
   
   def test_stores_lines_from_log
+    @al.store_lines @test_log
     expected = [
       '208.77.188.166 - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342',
       '75.146.57.34 - - [29/Apr/2009:16:08:38 -0700] "GET / HTTP/1.1" 304 -'
       ]
-    actual = @al.store_lines @test_log
     
-    assert_equal expected, actual
+    assert_equal expected, @al.lines
+  end
+  
+  def test_processes_stored_lines
+    @al.store_lines @test_log
+    @al.process_lines
+    
+    expected = [
+      'resolved.com - - [29/Apr/2009:16:07:38 -0700] "GET / HTTP/1.1" 200 1342',
+      'resolved.com - - [29/Apr/2009:16:08:38 -0700] "GET / HTTP/1.1" 304 -'
+      ]    
+    
+    assert_equal expected, @al.lines
   end
   
   def test_parses_line_and_replaces_ip
